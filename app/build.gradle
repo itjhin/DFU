@@ -8,7 +8,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.h8xC0d8x.itjhin.dfu"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -54,4 +54,7 @@ dependencies {
     // Import the BLE Common Library.
     // The BLE Common Library depends on BLE Library. It is enough to include the first one.
     implementation 'no.nordicsemi.android:ble-common:2.1.1'
+
+    // Nordic support library
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.0'
 }

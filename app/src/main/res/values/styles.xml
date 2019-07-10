@@ -21,4 +21,37 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+
+    <style name="HeaderBar">
+        <item name="android:background">?colorPrimary</item>
+    </style>
+
+    <style name="HeaderShadow">
+        <item name="android:foreground">@drawable/action_bar_shadow</item>
+        <!--<item name="foreground">@drawable/action_bar_shadow</item>-->
+    </style>
+
+    <!-- Style used by the Toolbar -->
+    <style name="ActionBarThemeOverlay" parent="@style/ThemeOverlay.MaterialComponents.ActionBar">
+        <item name="android:textColorPrimary">#FFF</item>
+        <item name="android:textColorSecondary">#8fff</item>
+        <item name="colorControlNormal">#fff</item>
+        <item name="colorControlHighlight">#3fff</item>
+    </style>
+
+    <!-- Style used by the Toolbar's overflow menu -->
+    <style name="ActionBarPopupThemeOverlay" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="colorControlNormal">@color/actionBarColorDark</item>
+    </style>
+
+    <!-- Style used by the Toolbar -->
+    <style name="ActionBar.TitleText" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ActionBar.SpinnerTitle" parent="@style/Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">#fff</item>
+    </style>
+
 </resources>

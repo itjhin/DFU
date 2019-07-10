@@ -98,5 +98,3 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
     }
 }
 
-//public class DfuActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, ScannerFragment.OnDeviceSelectedListener,
-//UploadCancelFragment.CancelFragmentListener, PermissionRationaleFragment.PermissionDialogListener

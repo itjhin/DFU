@@ -154,8 +154,10 @@ class ScannerFragment : DialogFragment() {
         //return super.onCreateDialog(savedInstanceState)
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
-        super.onCancel(dialog)
+    override fun onCancel(dialog: DialogInterface) {
+        if (dialog != null) {
+            super.onCancel(dialog)
+        }
 
         mListener?.onDialogCanceled()
     }

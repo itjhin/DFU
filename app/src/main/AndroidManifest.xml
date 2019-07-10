@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.h8xC0d8x.itjhin.dfu.settings.SettingActivity"
             android:label="@string/dfu_settings_title" />
         <activity
             android:name=".NotificationActivity"

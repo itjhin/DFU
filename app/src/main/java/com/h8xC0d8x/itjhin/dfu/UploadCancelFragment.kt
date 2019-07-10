@@ -34,7 +34,6 @@ import androidx.annotation.NonNull
 import androidx.appcompat.app.AlertDialog
 import android.content.DialogInterface
 
-import com.h8xC0d8x.itjhin.dfu.DfuService
 
 
 /**
@@ -54,7 +53,7 @@ class UploadCancelFragment : DialogFragment() {
         return UploadCancelFragment()
     }
 
-    override fun onAttach(activity: Activity?) {
+    override fun onAttach(activity: Activity) {
         super.onAttach(activity!!)
 
         try {

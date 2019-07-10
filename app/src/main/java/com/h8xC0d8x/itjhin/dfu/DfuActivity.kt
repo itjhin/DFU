@@ -26,6 +26,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.Manifest
 import android.app.ActivityManager
+import android.bluetooth.BluetoothDevice
 import android.database.Cursor
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
@@ -34,7 +35,9 @@ import androidx.fragment.app.DialogFragment
 
 import com.h8xC0d8x.itjhin.dfu.scanner.ScannerFragment;
 
-class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>  {
+class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, ScannerFragment.OnDeviceSelectedListener,
+    PermissionRationaleFragment.PermissionDialogListener
+{
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +58,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>  
      *  Loader Interface
      *
      ********************************************************************/
+
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -64,6 +68,32 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>  
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
+    /********************************************************************
+     *
+     *  ScannerFragment Interface
+     *
+     ********************************************************************/
+
+    override fun onDeviceSelected(device: BluetoothDevice, name: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onDialogCanceled() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
+    /********************************************************************
+     *
+     *  PermissionRationaleFragment Interface
+     *
+     ********************************************************************/
+
+    override fun onRequestPermission(permission: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -30,6 +30,8 @@ import com.h8xC0d8x.itjhin.dfu.scanner.ScannerFragment
 import android.content.Intent
 import android.os.Bundle
 
+import no.nordicsemi.android.dfu.DfuBaseService
+
 
 
 
@@ -44,7 +46,7 @@ class DfuInitiatorActivity : AppCompatActivity(), ScannerFragment.OnDeviceSelect
 
         // The activity must be started with a path to the HEX file
         val intent = intent
-        if (!intent.hasExtra(DfuService.EXTRA_FILE_PATH))
+        if (!intent.hasExtra(DfuBaseService.EXTRA_FILE_PATH))
             finish()
 
 

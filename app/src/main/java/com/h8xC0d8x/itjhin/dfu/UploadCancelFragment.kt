@@ -64,7 +64,7 @@ class UploadCancelFragment : DialogFragment() {
 
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         val manager = LocalBroadcastManager.getInstance(activity!!)
         val pauseAction = Intent(DfuService.BROADCAST_ACTION)
         pauseAction.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_RESUME)

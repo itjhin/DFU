@@ -6,6 +6,25 @@ import android.app.Activity
 
 
 class DfuService : DfuBaseService() {
+
+    companion object{
+        /**
+         *  Adding companion object because kotlin can't procure static variable from DfuBaseService.java
+         */
+        const val EXTRA_DEVICE_NAME = DfuBaseService.EXTRA_DEVICE_NAME
+        const val EXTRA_FILE_PATH = DfuBaseService.EXTRA_FILE_PATH
+        const val EXTRA_INIT_FILE_PATH = DfuBaseService.EXTRA_INIT_FILE_PATH
+        const val EXTRA_FILE_TYPE = DfuBaseService.EXTRA_FILE_TYPE
+        const val TYPE_AUTO = DfuBaseService.TYPE_AUTO
+        const val EXTRA_KEEP_BOND = DfuBaseService.EXTRA_KEEP_BOND
+        const val EXTRA_DEVICE_ADDRESS = DfuBaseService.EXTRA_DEVICE_ADDRESS
+        const val EXTRA_UNSAFE_EXPERIMENTAL_BUTTONLESS_DFU = DfuBaseService.EXTRA_UNSAFE_EXPERIMENTAL_BUTTONLESS_DFU
+        const val BROADCAST_ACTION = DfuBaseService.BROADCAST_ACTION
+        const val EXTRA_ACTION = DfuBaseService.EXTRA_ACTION
+        const val ACTION_RESUME = DfuBaseService.ACTION_RESUME
+        const val ACTION_ABORT = DfuBaseService.ACTION_ABORT
+    }
+
     override fun getNotificationTarget(): Class<out Activity>? {
         /*
                  * As a target activity the NotificationActivity is returned, not the MainActivity. This is because the notification must create a new task:
@@ -27,4 +46,5 @@ class DfuService : DfuBaseService() {
         // return BuildConfig.DEBUG;
         return true
     }
+
 }

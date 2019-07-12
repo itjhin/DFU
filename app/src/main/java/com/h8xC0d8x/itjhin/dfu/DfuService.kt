@@ -23,6 +23,7 @@ class DfuService : DfuBaseService() {
         const val EXTRA_ACTION = DfuBaseService.EXTRA_ACTION
         const val ACTION_RESUME = DfuBaseService.ACTION_RESUME
         const val ACTION_ABORT = DfuBaseService.ACTION_ABORT
+        const val NOTIFICATION_ID = DfuBaseService.NOTIFICATION_ID
     }
 
     override fun getNotificationTarget(): Class<out Activity>? {

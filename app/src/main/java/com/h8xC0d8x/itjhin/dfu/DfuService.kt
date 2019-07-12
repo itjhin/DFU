@@ -15,7 +15,12 @@ class DfuService : DfuBaseService() {
         const val EXTRA_FILE_PATH = DfuBaseService.EXTRA_FILE_PATH
         const val EXTRA_INIT_FILE_PATH = DfuBaseService.EXTRA_INIT_FILE_PATH
         const val EXTRA_FILE_TYPE = DfuBaseService.EXTRA_FILE_TYPE
+        // fileType
         const val TYPE_AUTO = DfuBaseService.TYPE_AUTO
+        const val TYPE_BOOTLOADER = DfuBaseService.TYPE_BOOTLOADER
+        const val TYPE_APPLICATION = DfuBaseService.TYPE_APPLICATION
+        const val TYPE_SOFT_DEVICE = DfuBaseService.TYPE_SOFT_DEVICE
+
         const val EXTRA_KEEP_BOND = DfuBaseService.EXTRA_KEEP_BOND
         const val EXTRA_DEVICE_ADDRESS = DfuBaseService.EXTRA_DEVICE_ADDRESS
         const val EXTRA_UNSAFE_EXPERIMENTAL_BUTTONLESS_DFU = DfuBaseService.EXTRA_UNSAFE_EXPERIMENTAL_BUTTONLESS_DFU
@@ -24,6 +29,8 @@ class DfuService : DfuBaseService() {
         const val ACTION_RESUME = DfuBaseService.ACTION_RESUME
         const val ACTION_ABORT = DfuBaseService.ACTION_ABORT
         const val NOTIFICATION_ID = DfuBaseService.NOTIFICATION_ID
+
+        const val MIME_TYPE_OCTET_STREAM = DfuBaseService.MIME_TYPE_OCTET_STREAM
     }
 
     override fun getNotificationTarget(): Class<out Activity>? {

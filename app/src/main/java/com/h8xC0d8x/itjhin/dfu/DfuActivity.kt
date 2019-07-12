@@ -48,15 +48,21 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
+import android.provider.MediaStore
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.loader.content.CursorLoader
 import androidx.preference.PreferenceManager
 
 import com.h8xC0d8x.itjhin.dfu.R
 import com.h8xC0d8x.itjhin.dfu.utility.FileHelper
 import com.h8xC0d8x.itjhin.dfu.settings.SettingActivity
+import no.nordicsemi.android.dfu.DfuServiceInitiator
 import java.io.File
 
 
@@ -382,13 +388,14 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                  * 'File' schema allows us to create a File object and read details from if directly.
                  *  Data from 'Content' schema must be read by Content Provider. To do that we are using a Loader.
                  */
-                val uri : Uri = data!!.data!!
+                val uri : Uri = data?.data!!
                 if(uri.scheme.equals("file")) {
                     val path : String = uri!!.path!!
                     val file : File = File(path)
                     mFilePath = path
-                    //FIXME !!!
-                    //updateFileInfo(file.name, file.length(), mFileType)
+
+                    updateFileInfo(file.name, file.length(), mFileType)
+
                 } else if (uri.scheme.equals("content")) {
                     mFileStreamUri = uri
 
@@ -407,40 +414,30 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                 }
             }
 
-        }
-        /*
-                switch (requestCode) {
+            SELECT_INIT_FILE_REQ -> {
+                mInitFilePath = null
+                mInitFileStreamUri = null
 
-                        case SELECT_INIT_FILE_REQ: {
-                                mInitFilePath = null;
-                                mInitFileStreamUri = null;
+                val uri : Uri = data?.data!!
+                /*
+                 * The URI returned from application may be in 'file' or 'content' schema. 'File' schema allows us to create a File object and read details from if
+                 * directly. Data from 'Content' schema must be read by Content Provider. To do that we are using a Loader.
+                 */
 
-                                // and read new one
-                                final Uri uri = data.getData();
-                        /*
-                         * The URI returned from application may be in 'file' or 'content' schema. 'File' schema allows us to create a File object and read details from if
-                         * directly. Data from 'Content' schema must be read by Content Provider. To do that we are using a Loader.
-                         */
-                                if (uri.getScheme().equals("file")) {
-                                        // the direct path to the file has been returned
-                                        mInitFilePath = uri.getPath();
-                                        mFileStatusView.setText(R.string.dfu_file_status_ok_with_init);
-                                } else if (uri.getScheme().equals("content")) {
-                                        // an Uri has been returned
-                                        mInitFileStreamUri = uri;
-                                        // if application returned Uri for streaming, let's us it. Does it works?
-                                        // FIXME both Uris works with Google Drive app. Why both? What's the difference? How about other apps like DropBox?
-                                        final Bundle extras = data.getExtras();
-                                        if (extras != null && extras.containsKey(Intent.EXTRA_STREAM))
-                                                mInitFileStreamUri = extras.getParcelable(Intent.EXTRA_STREAM);
-                                        mFileStatusView.setText(R.string.dfu_file_status_ok_with_init);
-                                }
-                                break;
-                        }
-                        default:
-                                break;
+                if (uri.scheme.equals("file")) {
+                    mInitFilePath = uri.path
+                    mFileStatusView?.text = getString(R.string.dfu_file_status_ok_with_init)
+                } else  if (uri.scheme.equals("content")) {
+                    mInitFileStreamUri = uri
+                    val extras : Bundle = data.extras!!
+                    if (extras != null && extras.containsKey(Intent.EXTRA_STREAM))
+                        mInitFileStreamUri = extras.getParcelable(Intent.EXTRA_STREAM)
+
+                    mFileStatusView?.text = getString(R.string.dfu_file_status_ok_with_init)
                 }
-                */
+            }
+
+        }
     }
 
     private fun isBLESupported() {
@@ -550,17 +547,122 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
      ********************************************************************/
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val uri : Uri = args?.getParcelable<Uri>(EXTRA_URI)!!
+        /*
+         * Some apps, f.e. Google Drive allow to select file that is not on the device.
+         * There is no "_data" column handled by that provider.
+         * Let's try to obtain all columns and then check which columns are present.
+         */
+        return CursorLoader(applicationContext,uri,null /* all columns, instead of projection */,null,null,null)
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if(data != null && data.moveToNext()) {
+            /*
+             * Here we have to check the column indexes by name as we have requested for all. The order may be different.
+             */
+            val fileName : String = data.getString(data.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)) /*0 DISPLAY_NAME */
+            val fileSize : Int = data.getInt(data.getColumnIndex(MediaStore.MediaColumns.SIZE)) /* 1 SIZE */
+            var filePath : String? = null
+            val dataIndex : Int = data.getColumnIndex(MediaStore.MediaColumns.DATA)
+            if (dataIndex != -1)
+                filePath = data.getString(dataIndex)
+
+            if(!TextUtils.isEmpty(filePath))
+                mFilePath = filePath
+
+            updateFileInfo(fileName, fileSize as Long, mFileType)
+
+        } else {
+            mFileNameView?.text = null
+            mFileTypeView?.text = null
+            mFileSizeView?.text = null
+            mFilePath = null
+            mFileStreamUri = null
+            mFileStatusView?.text = getString(R.string.dfu_file_status_error)
+            mStatusOk = false
+        }
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mFileNameView?.text = null
+        mFileTypeView?.text = null
+        mFileSizeView?.text = null
+        mFilePath = null
+        mFileStreamUri = null
+        mStatusOk = false
     }
 
+
+    /**
+     * Updates the file information on UI
+     *
+     * @param fileName file name
+     * @param fileSize file length
+     */
+    private fun updateFileInfo(fileName : String, fileSize : Long, fileType : Int)
+    {
+        mFileNameView?.text = fileName
+
+        when(fileType) {
+            DfuService.TYPE_AUTO -> mFileTypeView?.text = resources.getStringArray(R.array.dfu_file_type)[0]
+            DfuService.TYPE_SOFT_DEVICE -> mFileTypeView?.text = resources.getStringArray(R.array.dfu_file_type)[1]
+            DfuService.TYPE_BOOTLOADER -> mFileTypeView?.text = resources.getStringArray(R.array.dfu_file_type)[2]
+            DfuService.TYPE_APPLICATION -> mFileTypeView?.text = resources.getStringArray(R.array.dfu_file_type)[3]
+        }
+
+        mFileSizeView?.text = getString(R.string.dfu_file_size_text, fileSize)
+        mFileScopeView?.text = getString(R.string.not_available)
+
+        val extension : Regex = if (mFileType == DfuService.TYPE_AUTO) "(?i)ZIP".toRegex() else "(?i)HEX|BIN".toRegex() // (?i) =  case insensitive
+        val statusOK : Boolean = MimeTypeMap.getFileExtensionFromUrl(fileName).matches(extension)
+        mStatusOk = statusOK
+
+        mFileStatusView?.text = if(statusOK) getString(R.string.dfu_file_status_ok) else getString(R.string.dfu_file_status_invalid)
+        mUploadButton?.isEnabled = (mSelectedDevice != null && statusOK)
+
+        // Ask the user for the Init packet file if HEX or BIN files are selected.
+        // In case of a ZIP file the Init packets should be included in the ZIP.
+        if (statusOK) {
+            if(fileType != DfuService.TYPE_AUTO) {
+                mScope = null
+                mFileScopeView?.text = getString(R.string.not_available)
+                AlertDialog.Builder(this).setTitle(R.string.dfu_file_init_title).setMessage(R.string.dfu_file_init_message)
+                    .setNegativeButton(R.string.no) {dialog, which ->
+                        mInitFilePath = null
+                        mInitFileStreamUri = null
+                    }
+                    .setPositiveButton(R.string.yes) { dialog, which ->
+                        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                        intent.type = DfuService.MIME_TYPE_OCTET_STREAM
+                        intent.addCategory(Intent.CATEGORY_OPENABLE)
+                        startActivityForResult(intent, SELECT_INIT_FILE_REQ)
+                    }
+                    .show()
+            } else {
+                AlertDialog.Builder(this).setTitle(R.string.dfu_file_scope_title).setCancelable(false)
+                    .setSingleChoiceItems(R.array.dfu_file_scope, 0) { dialog, which ->
+                        when (which) {
+                            0 -> mScope = null
+                            1 -> mScope = DfuServiceInitiator.SCOPE_SYSTEM_COMPONENTS
+                            2 -> mScope = DfuServiceInitiator.SCOPE_APPLICATION
+                        }
+                    }
+                    .setPositiveButton(R.string.ok) { dialogInterface, i ->
+                        val index: Int
+                        if (mScope == null) {
+                            index = 0
+                        } else if (mScope === DfuServiceInitiator.SCOPE_SYSTEM_COMPONENTS) {
+                            index = 1
+                        } else {
+                            index = 2
+                        }
+                        mFileScopeView?.text = resources.getStringArray(R.array.dfu_file_scope)[index]
+                    }
+                    .show()
+            }
+        }
+    }
 
     /********************************************************************
      *
@@ -608,6 +710,17 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                     Toast.makeText(this, R.string.no_required_permission, Toast.LENGTH_SHORT).show();
                 }
         }
+    }
+
+    /**
+     * Called when the question mark was pressed
+     *
+     * @param view a button that was pressed
+     */
+    fun onSelectFileHelpClicked(view: View) {
+        AlertDialog.Builder(this).setTitle(R.string.dfu_help_title).setMessage(R.string.dfu_help_message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 }
 

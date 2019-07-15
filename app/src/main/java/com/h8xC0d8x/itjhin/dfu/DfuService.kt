@@ -31,6 +31,7 @@ class DfuService : DfuBaseService() {
         const val NOTIFICATION_ID = DfuBaseService.NOTIFICATION_ID
 
         const val MIME_TYPE_OCTET_STREAM = DfuBaseService.MIME_TYPE_OCTET_STREAM
+        const val MIME_TYPE_ZIP = DfuBaseService.MIME_TYPE_ZIP
     }
 
     override fun getNotificationTarget(): Class<out Activity>? {

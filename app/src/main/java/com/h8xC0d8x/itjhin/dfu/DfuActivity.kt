@@ -34,13 +34,7 @@ import android.net.Uri
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
 import androidx.appcompat.widget.Toolbar
-
-
-import com.h8xC0d8x.itjhin.dfu.scanner.ScannerFragment;
 import androidx.core.app.ActivityCompat
-import no.nordicsemi.android.dfu.DfuProgressListener
-import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
-import no.nordicsemi.android.dfu.DfuServiceListenerHelper
 import android.os.Parcelable
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
@@ -59,10 +53,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.loader.content.CursorLoader
 import androidx.preference.PreferenceManager
 
+
 import com.h8xC0d8x.itjhin.dfu.R
 import com.h8xC0d8x.itjhin.dfu.utility.FileHelper
 import com.h8xC0d8x.itjhin.dfu.settings.SettingActivity
+import com.h8xC0d8x.itjhin.dfu.scanner.ScannerFragment
+import com.h8xC0d8x.itjhin.dfu.adapter.FileBrowserAppsAdapter
+
+
+import no.nordicsemi.android.dfu.DfuProgressListener
+import no.nordicsemi.android.dfu.DfuProgressListenerAdapter
+import no.nordicsemi.android.dfu.DfuServiceListenerHelper
 import no.nordicsemi.android.dfu.DfuServiceInitiator
+
 import java.io.File
 
 
@@ -722,5 +725,75 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
             .setPositiveButton(android.R.string.ok, null)
             .show()
     }
+
+    	/**
+	 * Called when Select File was pressed
+	 *
+	 * @param view a button that was pressed
+	 */
+    fun onSelectFileClicked(view : View) {
+            mFileTypeTmp = mFileType
+            var index : Int = 0
+
+            when(mFileType) {
+                DfuService.TYPE_AUTO -> index = 0
+                DfuService.TYPE_SOFT_DEVICE -> index = 1
+                DfuService.TYPE_BOOTLOADER -> index = 2
+                DfuService.TYPE_APPLICATION -> index = 3
+            }
+
+            AlertDialog.Builder(this).setTitle(R.string.dfu_file_type_title)
+                .setSingleChoiceItems(R.array.dfu_file_type,index) { dialog, which ->
+                    when (which) {
+                        0 -> mFileTypeTmp = DfuService.TYPE_AUTO
+                        1 -> mFileTypeTmp = DfuService.TYPE_SOFT_DEVICE
+                        2 -> mFileTypeTmp = DfuService.TYPE_BOOTLOADER
+                        3 -> mFileTypeTmp = DfuService.TYPE_APPLICATION
+                    }
+                }
+                .setPositiveButton(R.string.ok){ dialog, which ->
+                    openFileChooser()
+                }
+                .setNeutralButton(R.string.dfu_file_info) { dialog,which ->
+                    val fragment : ZipInfoFragment = ZipInfoFragment()
+                    fragment.show(getSupportFragmentManager(), "help_fragment");
+                }
+                .setNegativeButton(R.string.cancel,null)
+                .show()
+        }
+
+
+    private fun openFileChooser() {
+        val intent : Intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.setType(if (mFileTypeTmp == DfuService.TYPE_AUTO) DfuService.MIME_TYPE_ZIP else DfuService.MIME_TYPE_OCTET_STREAM)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+        if (intent.resolveActivity(packageManager) != null) {
+            // file browser has been found on the device
+            startActivityForResult(intent, SELECT_FILE_REQ)
+        } else {
+            // there is no any file browser app, let's try to download one
+            val customView : View = layoutInflater.inflate(R.layout.app_file_browser, null)
+            val appsList : ListView = customView.findViewById(android.R.id.list)
+            appsList.adapter = FileBrowserAppsAdapter(this)
+            appsList.choiceMode = ListView.CHOICE_MODE_SINGLE
+            appsList.setItemChecked(0, true)
+
+            AlertDialog.Builder(this).setTitle(R.string.dfu_alert_no_filebrowser_title).setView(customView)
+                .setNegativeButton(R.string.no) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton(R.string.ok) { dialog, which ->
+                    val pos : Int = appsList.checkedItemPosition
+                    if (pos >= 0) {
+                        val query : String = resources.getStringArray(R.array.dfu_app_file_browser_action)[pos]
+                        val storeIntent : Intent = Intent(Intent.ACTION_VIEW, Uri.parse(query))
+                        startActivity(storeIntent)
+                    }
+                }
+                .show()
+        }
+    }
+
 }
 

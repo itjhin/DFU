@@ -6,7 +6,25 @@
 
     <color name="nordicLake">#FF0077C8</color>
     <color name="nordicBlueDark">#FF0090B0</color>
+    <color name="nordicMediumGray">#FF768692</color>
+    <color name="nordicSun">#FFFFCD00</color>
+    <color name="nordicLightGray">#FFD9E1E2</color>
+    <color name="nordicBlue">#FF00A9CE</color>
+    <color name="nordicBackground">@color/lightGray</color>
 
+    <!-- Common -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="lightGray">#FFF5F5F5</color>
 
+    <color name="actionBarColor">@color/nordicBlue</color>
     <color name="actionBarColorDark">@color/nordicBlueDark</color>
+    <color name="actionBarMenuTextColor">@color/white</color>
+    <color name="verticalTitleColor">@color/nordicMediumGray</color>
+    <color name="button_color">@color/nordicSun</color>
+    <color name="backgroundColor">@color/nordicLightGray</color>
+    <color name="headerBackgroundColor">@color/nordicBlue</color>
+    <color name="headerBackgroundColorDark">@color/nordicBlueDark</color>
+    <color name="headerTextColor">@color/white</color>
+
 </resources>

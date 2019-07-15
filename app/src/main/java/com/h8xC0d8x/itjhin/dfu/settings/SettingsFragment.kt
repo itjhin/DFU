@@ -37,10 +37,17 @@ import androidx.preference.Preference
 
 
 class SettingsFragment : PreferenceFragmentCompat(), DfuSettingsConstants,
-    SharedPreferences.OnSharedPreferenceChangeListener
-{
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
-    val SETTINGS_KEEP_BOND = "settings_keep_bond"
+    companion object {
+        const val SETTINGS_KEEP_BOND = "settings_keep_bond"
+        const val SETTINGS_ASSUME_DFU_NODE = DfuSettingsConstants.SETTINGS_ASSUME_DFU_NODE
+        const val SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED = DfuSettingsConstants.SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED
+        const val SETTINGS_NUMBER_OF_PACKETS = DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS
+        const val SETTINGS_MBR_SIZE = DfuSettingsConstants.SETTINGS_MBR_SIZE
+        const val SETTINGS_NUMBER_OF_PACKETS_DEFAULT = DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -77,19 +84,19 @@ class SettingsFragment : PreferenceFragmentCompat(), DfuSettingsConstants,
 
         val preferences = preferenceManager.sharedPreferences
 
-        if (DfuSettingsConstants.SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED == key) {
+        if (SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED == key) {
             val disabled =
-                !preferences.getBoolean(DfuSettingsConstants.SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED, true)
+                !preferences.getBoolean(SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED, true)
             if (disabled && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 AlertDialog.Builder(requireContext()).setMessage(R.string.dfu_settings_dfu_number_of_packets_info)
                     .setTitle(R.string.dfu_settings_dfu_information)
                     .setPositiveButton(R.string.ok, null).show()
             }
-        } else if (DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS == key) {
+        } else if (SETTINGS_NUMBER_OF_PACKETS == key) {
             updateNumberOfPacketsSummary()
-        } else if (DfuSettingsConstants.SETTINGS_MBR_SIZE == key) {
+        } else if (SETTINGS_MBR_SIZE == key) {
             updateMBRSize()
-        } else if (DfuSettingsConstants.SETTINGS_ASSUME_DFU_NODE == key && sharedPreferences!!.getBoolean(key, false)) {
+        } else if (SETTINGS_ASSUME_DFU_NODE == key && sharedPreferences!!.getBoolean(key, false)) {
             AlertDialog.Builder(requireContext()).setMessage(R.string.dfu_settings_dfu_assume_dfu_mode_info)
                 .setTitle(R.string.dfu_settings_dfu_information)
                 .setPositiveButton(R.string.ok, null)
@@ -102,16 +109,16 @@ class SettingsFragment : PreferenceFragmentCompat(), DfuSettingsConstants,
         val preferences : SharedPreferences = preferenceManager.sharedPreferences
 
         var value : String? = preferences.getString(
-            DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS,
-            DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT.toString()
+            SETTINGS_NUMBER_OF_PACKETS,
+            SETTINGS_NUMBER_OF_PACKETS_DEFAULT.toString()
         )
 
         // Security check
         if (TextUtils.isEmpty(value)) {
-            value = DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS_DEFAULT.toString()
-            preferences.edit().putString(DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS, value).apply()
+            value = SETTINGS_NUMBER_OF_PACKETS_DEFAULT.toString()
+            preferences.edit().putString(SETTINGS_NUMBER_OF_PACKETS, value).apply()
         }
-        screen.findPreference<Preference>(DfuSettingsConstants.SETTINGS_NUMBER_OF_PACKETS)!!.summary = value
+        screen.findPreference<Preference>(SETTINGS_NUMBER_OF_PACKETS)!!.summary = value
 
         val valueInt = Integer.parseInt(value!!)
         if (valueInt > 200 && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -127,7 +134,7 @@ class SettingsFragment : PreferenceFragmentCompat(), DfuSettingsConstants,
         val preferences = preferenceManager.sharedPreferences
 
         val value = preferences.getString(
-            DfuSettingsConstants.SETTINGS_MBR_SIZE,
+            SETTINGS_MBR_SIZE,
             DfuServiceInitiator.DEFAULT_MBR_SIZE.toString()
         )
         screen.findPreference<Preference>(DfuSettingsConstants.SETTINGS_MBR_SIZE)!!.summary = value

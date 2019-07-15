@@ -26,13 +26,13 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
-	tools:context=".dfu.DfuActivity">
+	tools:context=".DfuActivity">
 
 	<include
 		android:id="@+id/toolbar_actionbar"
 		layout="@layout/toolbar"/>
 
-	<no.nordicsemi.android.nrftoolbox.widget.ForegroundRelativeLayout
+	<com.h8xC0d8x.itjhin.dfu.widget.ForegroundRelativeLayout
 		style="@style/HeaderShadow"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
@@ -286,5 +286,5 @@
 		</LinearLayout>
 
 
-	</no.nordicsemi.android.nrftoolbox.widget.ForegroundRelativeLayout>
+	</com.h8xC0d8x.itjhin.dfu.widget.ForegroundRelativeLayout>
 </LinearLayout>

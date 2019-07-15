@@ -41,6 +41,7 @@ import android.content.Intent
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
 import android.text.TextUtils
@@ -51,14 +52,16 @@ import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.loader.content.CursorLoader
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
+import com.google.android.material.button.MaterialButton
 
 
-import com.h8xC0d8x.itjhin.dfu.R
 import com.h8xC0d8x.itjhin.dfu.utility.FileHelper
 import com.h8xC0d8x.itjhin.dfu.settings.SettingActivity
 import com.h8xC0d8x.itjhin.dfu.scanner.ScannerFragment
 import com.h8xC0d8x.itjhin.dfu.adapter.FileBrowserAppsAdapter
+import com.h8xC0d8x.itjhin.dfu.settings.SettingsFragment
 
 
 import no.nordicsemi.android.dfu.DfuProgressListener
@@ -674,11 +677,14 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
      ********************************************************************/
 
     override fun onDeviceSelected(device: BluetoothDevice, name: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mSelectedDevice = device
+        mUploadButton?.isEnabled = mStatusOk
+        mDeviceNameView?.text = name ?: getString(R.string.not_available)
     }
 
     override fun onDialogCanceled() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        /* Do nothing */
     }
 
     /********************************************************************
@@ -688,7 +694,12 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
      ********************************************************************/
 
     override fun onCancelUpload() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        mProgressBar?.isIndeterminate = true
+        mTextUploading?.text = getString(R.string.dfu_status_aborting)
+        mTextPercentage?.text = null
+
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 
@@ -763,6 +774,70 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
         }
 
 
+    /**
+     * Callback of UPDATE/CANCEL button on DfuActivity
+     */
+    fun onUploadClicked(view: View) {
+
+        if (isDfuServiceRunning()) {
+            showUploadCancelDialog()
+            return
+        }
+
+        // Check whether the selected file is a HEX file (we are just checking the extension)
+        if (!mStatusOk) {
+            Toast.makeText(this, R.string.dfu_file_status_invalid_message, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Save current state in order to restore it if user quit the Activity
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = preferences.edit()
+        editor.putString(PREFS_DEVICE_NAME, mSelectedDevice!!.name)
+        editor.putString(PREFS_FILE_NAME, mFileNameView!!.text.toString())
+        editor.putString(PREFS_FILE_TYPE, mFileTypeView!!.text.toString())
+        editor.putString(PREFS_FILE_SCOPE, mFileScopeView!!.text.toString())
+        editor.putString(PREFS_FILE_SIZE, mFileSizeView!!.text.toString())
+        editor.apply()
+
+        showProgressBar()
+
+        val keepBond = preferences.getBoolean(SettingsFragment.SETTINGS_KEEP_BOND, false)
+        val forceDfu = preferences.getBoolean(SettingsFragment.SETTINGS_ASSUME_DFU_NODE, false)
+        val enablePRNs = preferences.getBoolean(
+            SettingsFragment.SETTINGS_PACKET_RECEIPT_NOTIFICATION_ENABLED,
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+        )
+        val value = preferences.getString(
+            SettingsFragment.SETTINGS_NUMBER_OF_PACKETS,
+            DfuServiceInitiator.DEFAULT_PRN_VALUE.toString()
+        )
+        var numberOfPackets: Int
+        try {
+            numberOfPackets = Integer.parseInt(value!!)
+        } catch (e: NumberFormatException) {
+            numberOfPackets = DfuServiceInitiator.DEFAULT_PRN_VALUE
+        }
+
+        val starter = DfuServiceInitiator(mSelectedDevice!!.getAddress())
+            .setDeviceName(mSelectedDevice!!.name)
+            .setKeepBond(keepBond)
+            .setForceDfu(forceDfu)
+            .setPacketsReceiptNotificationsEnabled(enablePRNs)
+            .setPacketsReceiptNotificationsValue(numberOfPackets)
+            .setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true)
+        if (mFileType === DfuService.TYPE_AUTO) {
+            starter.setZip(mFileStreamUri, mFilePath)
+            if (mScope != null)
+                starter.setScope(mScope!!)
+        } else {
+            starter.setBinOrHex(mFileType, mFileStreamUri, mFilePath).setInitFile(mInitFileStreamUri, mInitFilePath)
+        }
+        starter.start(this, DfuService::class.java)
+    }
+
+
+
     private fun openFileChooser() {
         val intent : Intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.setType(if (mFileTypeTmp == DfuService.TYPE_AUTO) DfuService.MIME_TYPE_ZIP else DfuService.MIME_TYPE_OCTET_STREAM)
@@ -795,5 +870,26 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
         }
     }
 
+
+    private fun showUploadCancelDialog() {
+        val manager = LocalBroadcastManager.getInstance(this)
+        val pauseAction = Intent(DfuService.BROADCAST_ACTION)
+        pauseAction.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_PAUSE)
+        manager.sendBroadcast(pauseAction)
+
+        val fragment = UploadCancelFragment.getInstance()
+        fragment.show(getSupportFragmentManager(), TAG)
+    }
+
+    /**
+     * Callback of CONNECT/DISCONNECT button on DfuActivity
+     */
+    fun onConnectClicked(view: View) {
+        if (isBLEEnabled()) {
+            showDeviceScanningDialog()
+        } else {
+            showBLEDialog()
+        }
+    }
 }
 

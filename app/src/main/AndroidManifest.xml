@@ -40,7 +40,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".DfuActivity"
+                android:name="com.h8xC0d8x.itjhin.dfu.DfuActivity"
                 android:label="@string/app_name"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -53,10 +53,10 @@
             android:name="com.h8xC0d8x.itjhin.dfu.settings.SettingActivity"
             android:label="@string/dfu_settings_title" />
         <activity
-            android:name=".NotificationActivity"
+            android:name="com.h8xC0d8x.itjhin.dfu.NotificationActivity"
             android:label="@string/dfu_feature_title" />
         <service
-            android:name=".DfuService"
+            android:name="com.h8xC0d8x.itjhin.dfu.DfuService"
             android:exported="true"
             android:label="@string/dfu_service_title" >
             <intent-filter>

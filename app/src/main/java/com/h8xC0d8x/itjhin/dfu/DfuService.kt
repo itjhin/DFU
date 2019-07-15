@@ -28,6 +28,7 @@ class DfuService : DfuBaseService() {
         const val EXTRA_ACTION = DfuBaseService.EXTRA_ACTION
         const val ACTION_RESUME = DfuBaseService.ACTION_RESUME
         const val ACTION_ABORT = DfuBaseService.ACTION_ABORT
+        const val ACTION_PAUSE = DfuBaseService.ACTION_PAUSE
         const val NOTIFICATION_ID = DfuBaseService.NOTIFICATION_ID
 
         const val MIME_TYPE_OCTET_STREAM = DfuBaseService.MIME_TYPE_OCTET_STREAM

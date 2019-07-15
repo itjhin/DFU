@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Copyright (c) 2015, Nordic Semiconductor
   ~ All rights reserved.
   ~
@@ -19,22 +19,10 @@
   ~ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
   ~ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
   ~ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
-<androidx.appcompat.widget.Toolbar
-	android:id="@+id/toolbar_actionbar"
-	style="@style/HeaderBar"
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="?actionBarSize"
-	android:theme="@style/ActionBarThemeOverlay"
-	app:popupTheme="@style/ActionBarPopupThemeOverlay"
-	app:titleTextAppearance="@style/ActionBar.TitleText">
-
-	<com.h8xC0d8x.itjhin.dfu.widget.ClosableSpinner
-		android:id="@+id/toolbar_spinner"
-		android:layout_width="wrap_content"
-		android:layout_height="48dp"
-		android:minWidth="160dp"/>
-</androidx.appcompat.widget.Toolbar>
+  -->
+<level-list  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:maxLevel="0" android:drawable="@drawable/app_drive" />
+    <item android:maxLevel="1" android:drawable="@drawable/app_file_manager" />
+    <item android:maxLevel="2" android:drawable="@drawable/app_total_commander" />
+    <item android:maxLevel="3" android:drawable="@drawable/app_google_play" />
+</level-list>

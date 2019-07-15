@@ -49,8 +49,10 @@ class UploadCancelFragment : DialogFragment() {
         fun onCancelUpload()
     }
 
-    fun getInstance(): UploadCancelFragment {
-        return UploadCancelFragment()
+    companion object {
+        fun getInstance(): UploadCancelFragment {
+            return UploadCancelFragment()
+        }
     }
 
     override fun onAttach(activity: Activity) {

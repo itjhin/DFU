@@ -26,7 +26,7 @@ package com.h8xC0d8x.itjhin.dfu
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-
+import com.h8xC0d8x.itjhin.dfu.scanner.ExtendedBluetoothDevice
 
 
 class NotificationActivity : Activity() {

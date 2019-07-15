@@ -26,14 +26,18 @@ import no.nordicsemi.android.support.v18.scanner.ScanFilter
 import no.nordicsemi.android.support.v18.scanner.ScanResult
 import no.nordicsemi.android.support.v18.scanner.ScanSettings
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
+import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.Toast
 
 
 
 class ScannerFragment : DialogFragment() {
-    private val PARAM_UUID = "param_uuid"
+
+    private val TAG : String = "ScannerFragment"
+
     private val SCAN_DURATION: Long = 5000
 
     private var mUuid: ParcelUuid? = null
@@ -49,15 +53,17 @@ class ScannerFragment : DialogFragment() {
     private var mScanButton: Button? = null
     private var mIsScanning = false
 
+    companion object {
+        private val PARAM_UUID = "param_uuid"
+        fun getInstance(uuid: UUID?): ScannerFragment {
+            val fragment = ScannerFragment()
 
-    fun getInstance(uuid: UUID?): ScannerFragment {
-        val fragment = ScannerFragment()
-
-        val args = Bundle()
-        if (uuid != null)
-            args.putParcelable(PARAM_UUID, ParcelUuid(uuid))
-        fragment.arguments = args
-        return fragment
+            val args = Bundle()
+            if (uuid != null)
+                args.putParcelable(PARAM_UUID, ParcelUuid(uuid))
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     /**
@@ -74,7 +80,7 @@ class ScannerFragment : DialogFragment() {
          * always returns `null`, i.e. Sony Xperia Z1 (C6903) with Android 4.3.
          * The name has to be parsed manually form the Advertisement packet.
          */
-        fun onDeviceSelected(device: BluetoothDevice, name: String)
+        fun onDeviceSelected(device: BluetoothDevice, name: String?)
 
         /**
          * Fired when scanner dialog has been cancelled without selecting a device.
@@ -98,14 +104,14 @@ class ScannerFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var args : Bundle? = getArguments();
+        var args : Bundle? = arguments
         if (args != null && args.containsKey(PARAM_UUID)) {
-            mUuid = args.getParcelable(PARAM_UUID);
+            mUuid = args.getParcelable(PARAM_UUID)
         }
 
         val manager : BluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         if (manager != null) {
-            mBluetoothAdapter = manager.getAdapter();
+            mBluetoothAdapter = manager.adapter
         }
     }
 
@@ -115,23 +121,37 @@ class ScannerFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        Log.e(TAG,"Creating dialong on Scanner Fragment")
+
         val builder : AlertDialog.Builder = AlertDialog.Builder(requireContext())
         val dialogView : View = LayoutInflater.from(activity).inflate(R.layout.fragment_device_selection, null)
         val listview : ListView = dialogView.findViewById(android.R.id.list)
 
-        listview.setEmptyView(dialogView.findViewById(android.R.id.empty))
+        listview.emptyView = dialogView.findViewById(android.R.id.empty)
         mAdapter = DeviceListAdapter(activity)
         listview.adapter = mAdapter
 
         builder.setTitle(R.string.scanner_title)
         val dialog : AlertDialog = builder.setView(dialogView).create()
 
+        listview.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                stopScan()
+                dialog.dismiss()
+                val d : ExtendedBluetoothDevice = mAdapter!!.getItem(position) as ExtendedBluetoothDevice
+                mListener!!.onDeviceSelected(d.device!!,d.name!!)
+            }
+
+        }
+
+        /*
         listview.setOnItemClickListener { parent, view, position, id ->
             stopScan()
             dialog.dismiss()
             val d : ExtendedBluetoothDevice = mAdapter!!.getItem(position) as ExtendedBluetoothDevice
             mListener!!.onDeviceSelected(d.device!!,d.name!!)
         }
+        */
 
         mPermissionRationale = dialogView.findViewById(R.id.permission_rationale) // this is not null only on API23+
 

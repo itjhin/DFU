@@ -77,14 +77,17 @@ class UploadCancelFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(activity!!).setTitle(R.string.dfu_confirmation_dialog_title)
             .setMessage(R.string.dfu_upload_dialog_cancel_message).setCancelable(false)
-            .setPositiveButton(R.string.yes, { dialog, whichButton ->
+            .setPositiveButton(R.string.yes) { dialog, whichButton ->
                 val manager = LocalBroadcastManager.getInstance(activity!!)
                 val pauseAction = Intent(DfuService.BROADCAST_ACTION)
                 pauseAction.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_ABORT)
                 manager.sendBroadcast(pauseAction)
 
                 mListener?.onCancelUpload()
-            }).setNegativeButton(R.string.no, { dialog, which -> dialog.cancel() }).create()
+            }
+            .setNegativeButton(R.string.no) { dialog, which ->
+                dialog.cancel() }
+            .create()
     }
 
 

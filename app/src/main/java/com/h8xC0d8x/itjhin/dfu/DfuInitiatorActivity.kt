@@ -49,9 +49,8 @@ class DfuInitiatorActivity : AppCompatActivity(), ScannerFragment.OnDeviceSelect
 
 
         if (savedInstanceState == null) {
-            val temp = ScannerFragment()
-            val fragment : ScannerFragment =
-                temp.getInstance(null) // Device that is advertising directly does not have the GENERAL_DISCOVERABLE nor LIMITED_DISCOVERABLE flag set.
+
+            val fragment : ScannerFragment = ScannerFragment.getInstance(null) // Device that is advertising directly does not have the GENERAL_DISCOVERABLE nor LIMITED_DISCOVERABLE flag set.
             fragment.show(supportFragmentManager, null)
         }
     }
@@ -60,8 +59,8 @@ class DfuInitiatorActivity : AppCompatActivity(), ScannerFragment.OnDeviceSelect
      *  ScannerFragment Interface
      */
 
-    override fun onDeviceSelected(device: BluetoothDevice, name: String) {
-        val intent = intent
+    override fun onDeviceSelected(device: BluetoothDevice, name: String?) {
+        val intent = Intent()
         val overwrittenName = intent.getStringExtra(DfuService.EXTRA_DEVICE_NAME)
         val path = intent.getStringExtra(DfuService.EXTRA_FILE_PATH)
         val initPath = intent.getStringExtra(DfuService.EXTRA_INIT_FILE_PATH)

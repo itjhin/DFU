@@ -45,6 +45,7 @@ import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -54,7 +55,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.loader.content.CursorLoader
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
-import com.google.android.material.button.MaterialButton
 
 
 import com.h8xC0d8x.itjhin.dfu.utility.FileHelper
@@ -539,8 +539,10 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
         mStatusOk = false
     }
 
-    fun showDeviceScanningDialog() {
-        val dialog : ScannerFragment = ScannerFragment().getInstance(null)
+    private fun showDeviceScanningDialog() {
+        Log.e(TAG,"entrance to scanner fragment")
+
+        val dialog : ScannerFragment = ScannerFragment.getInstance(null)
         // Device that is advertising directly does not have the GENERAL_DISCOVERABLE nor LIMITED_DISCOVERABLE flag set.
         dialog.show(supportFragmentManager,"scan_fragment")
     }
@@ -676,7 +678,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
      *
      ********************************************************************/
 
-    override fun onDeviceSelected(device: BluetoothDevice, name: String) {
+    override fun onDeviceSelected(device: BluetoothDevice, name: String?) {
         mSelectedDevice = device
         mUploadButton?.isEnabled = mStatusOk
         mDeviceNameView?.text = name ?: getString(R.string.not_available)

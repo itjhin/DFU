@@ -24,6 +24,7 @@ package com.h8xC0d8x.itjhin.dfu.scanner
 import android.content.Context
 import android.widget.BaseAdapter
 import android.bluetooth.BluetoothDevice;
+import android.util.Log
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 import com.h8xC0d8x.itjhin.dfu.R
 import android.widget.TextView
@@ -37,6 +38,9 @@ import android.widget.ImageView
  * DeviceListAdapter class is list adapter for showing scanned Devices name, address and RSSI image based on RSSI values.
  */
 class DeviceListAdapter() : BaseAdapter() {
+
+    private val TAG : String = "DeviceListAdapter"
+
     private val TYPE_TITLE = 0
     private val TYPE_ITEM = 1
     private val TYPE_EMPTY = 2
@@ -142,7 +146,7 @@ class DeviceListAdapter() : BaseAdapter() {
         return position.toLong()
     }
 
-    override fun getView(position: Int, oldView: View, parent: ViewGroup): View {
+    override fun getView(position: Int, oldView: View?, parent: ViewGroup): View {
         val inflater = LayoutInflater.from(mContext)
         val type = getItemViewType(position)
 

@@ -893,5 +893,9 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
             showBLEDialog()
         }
     }
+
+    override fun onBackPressed() {
+        // do nothing. Protect from exiting the application when splash screen is shown
+    }
 }
 

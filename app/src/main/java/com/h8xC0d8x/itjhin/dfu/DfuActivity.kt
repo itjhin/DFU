@@ -25,6 +25,7 @@ package com.h8xC0d8x.itjhin.dfu
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.Manifest
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.NotificationManager
 import android.bluetooth.BluetoothDevice
@@ -407,7 +408,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
 
                     // if application returned Uri for streaming, let's us it. Does it works?
                     // FIXME both Uris works with Google Drive app. Why both? What's the difference? How about other apps like DropBox?
-                    val extras : Bundle = data?.extras!!
+                    val extras : Bundle? = data?.extras
                     if (extras != null && extras.containsKey(Intent.EXTRA_STREAM)) {
                         mFileStreamUri = extras.getParcelable(Intent.EXTRA_STREAM)
                     }
@@ -415,8 +416,9 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                     // file name and size must be obtained from Content Provider
                     val bundle : Bundle = Bundle()
                     bundle.putParcelable(EXTRA_URI, uri)
-                    //FIXME !!
-                    //loaderManager.restartLoader<Cursor>(SELECT_FILE_REQ, bundle, this)
+
+                    //loaderManager.restartLoader(SELECT_FILE_REQ, bundle, this)
+                    supportLoaderManager.restartLoader(SELECT_FILE_REQ, bundle, this)
                 }
             }
 
@@ -455,7 +457,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
 
     private fun isBLEEnabled(): Boolean {
         val manager : BluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val adapter : BluetoothAdapter = manager.adapter
+        val adapter : BluetoothAdapter? = manager.adapter
         // TODO: Check on the manager adapter return
         return adapter != null && adapter.isEnabled
     }
@@ -579,7 +581,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
             if(!TextUtils.isEmpty(filePath))
                 mFilePath = filePath
 
-            updateFileInfo(fileName, fileSize as Long, mFileType)
+            updateFileInfo(fileName, fileSize.toLong(), mFileType)
 
         } else {
             mFileNameView?.text = null
@@ -685,7 +687,6 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
     }
 
     override fun onDialogCanceled() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         /* Do nothing */
     }
 
@@ -700,8 +701,6 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
         mProgressBar?.isIndeterminate = true
         mTextUploading?.text = getString(R.string.dfu_status_aborting)
         mTextPercentage?.text = null
-
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 
@@ -864,7 +863,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                     val pos : Int = appsList.checkedItemPosition
                     if (pos >= 0) {
                         val query : String = resources.getStringArray(R.array.dfu_app_file_browser_action)[pos]
-                        val storeIntent : Intent = Intent(Intent.ACTION_VIEW, Uri.parse(query))
+                        val storeIntent = Intent(Intent.ACTION_VIEW, Uri.parse(query))
                         startActivity(storeIntent)
                     }
                 }
@@ -880,7 +879,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
         manager.sendBroadcast(pauseAction)
 
         val fragment = UploadCancelFragment.getInstance()
-        fragment.show(getSupportFragmentManager(), TAG)
+        fragment.show(supportFragmentManager, TAG)
     }
 
     /**

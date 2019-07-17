@@ -397,7 +397,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                  */
                 val uri : Uri = data?.data!!
                 if(uri.scheme.equals("file")) {
-                    val path : String = uri!!.path!!
+                    val path : String = uri.path!!
                     val file : File = File(path)
                     mFilePath = path
 
@@ -408,7 +408,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
 
                     // if application returned Uri for streaming, let's us it. Does it works?
                     // FIXME both Uris works with Google Drive app. Why both? What's the difference? How about other apps like DropBox?
-                    val extras : Bundle? = data?.extras
+                    val extras : Bundle? = data.extras
                     if (extras != null && extras.containsKey(Intent.EXTRA_STREAM)) {
                         mFileStreamUri = extras.getParcelable(Intent.EXTRA_STREAM)
                     }
@@ -437,7 +437,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
                     mFileStatusView?.text = getString(R.string.dfu_file_status_ok_with_init)
                 } else  if (uri.scheme.equals("content")) {
                     mInitFileStreamUri = uri
-                    val extras : Bundle = data.extras!!
+                    val extras : Bundle? = data.extras
                     if (extras != null && extras.containsKey(Intent.EXTRA_STREAM))
                         mInitFileStreamUri = extras.getParcelable(Intent.EXTRA_STREAM)
 
@@ -732,7 +732,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
      *
      * @param view a button that was pressed
      */
-    fun onSelectFileHelpClicked(view: View) {
+    fun onSelectFileHelpClicked( view : View) {
         AlertDialog.Builder(this).setTitle(R.string.dfu_help_title).setMessage(R.string.dfu_help_message)
             .setPositiveButton(android.R.string.ok, null)
             .show()
@@ -743,7 +743,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
 	 *
 	 * @param view a button that was pressed
 	 */
-    fun onSelectFileClicked(view : View) {
+    fun onSelectFileClicked( view : View) {
             mFileTypeTmp = mFileType
             var index : Int = 0
 
@@ -885,7 +885,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
     /**
      * Callback of CONNECT/DISCONNECT button on DfuActivity
      */
-    fun onConnectClicked(view: View) {
+    fun onConnectClicked( view : View) {
         if (isBLEEnabled()) {
             showDeviceScanningDialog()
         } else {

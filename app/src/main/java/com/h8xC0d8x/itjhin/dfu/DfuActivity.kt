@@ -820,6 +820,10 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
             numberOfPackets = DfuServiceInitiator.DEFAULT_PRN_VALUE
         }
 
+        /** On API > 27, services which use FOREGROUND service will need to set its own notification channel **/
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1)
+            DfuServiceInitiator.createDfuNotificationChannel(applicationContext)
+
         val starter = DfuServiceInitiator(mSelectedDevice!!.getAddress())
             .setDeviceName(mSelectedDevice!!.name)
             .setKeepBond(keepBond)

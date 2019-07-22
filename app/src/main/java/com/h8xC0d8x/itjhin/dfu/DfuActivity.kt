@@ -824,6 +824,7 @@ class DfuActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>, 
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1)
             DfuServiceInitiator.createDfuNotificationChannel(applicationContext)
 
+        /** !!! This is the initiator of the DfuService !!! **/
         val starter = DfuServiceInitiator(mSelectedDevice!!.getAddress())
             .setDeviceName(mSelectedDevice!!.name)
             .setKeepBond(keepBond)
